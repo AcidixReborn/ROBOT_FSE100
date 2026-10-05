@@ -49,6 +49,6 @@ def control_ev3(ev3_ip, ev3_port):
 
 # Example usage
 if __name__ == "__main__":
-    EV3_IP = "192.168.137.3"  # Replace with your EV3's IP address
+    EV3_IP = "192.168.0.145"  # Replace with your EV3's IP address
     EV3_PORT = 12345
     control_ev3(EV3_IP, EV3_PORT)
