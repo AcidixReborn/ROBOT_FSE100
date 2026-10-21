@@ -2,7 +2,7 @@
 # main.py
 import socket
 from pybricks.hubs import EV3Brick
-from pybricks.ev3devices import Motor
+from pybricks.ev3devices import Motor, TouchSensor
 from pybricks.parameters import Port
 from pybricks.robotics import DriveBase
 
@@ -13,7 +13,8 @@ left_motor = Motor(Port.C)
 right_motor = Motor(Port.D)
 # weapon = Motor(Port.A)
 robot = DriveBase(left_motor, right_motor, wheel_diameter=55.5, axle_track=104)
-
+touch_sensor = TouchSensor(Port.B)
+reading = touch_sensor.pressed() 
 
 # Server configuration
 server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -26,7 +27,9 @@ print("Connected to {}".format(address))
 
 try:
     while True:
-       
+        if touch_sensor.pressed():
+            ev3.speaker.beep() 
+            break
         command = client_socket.recv(2).decode()
         if not command:
             break
