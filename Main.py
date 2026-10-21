@@ -25,15 +25,18 @@ client_socket, address = server_socket.accept()
 print("Connected to {}".format(address))
 
 
+while not touch_sensor.pressed():
+        ev3.speaker.beep()
+        break
+
 try:
+    
     while True:
-        if touch_sensor.pressed():
-            ev3.speaker.beep() 
-            break
+
         command = client_socket.recv(2).decode()
         if not command:
             break
-
+        
 
         key, action = command[0], command[1]
         if action == "d":  # Key press
@@ -52,7 +55,7 @@ try:
                 robot.stop()  # Stop the robot on key release
             #elif key == "f":
             #    weapon.stop()  # Stop the weapon motor on key release
-
+            
 
 finally:
     client_socket.close()
