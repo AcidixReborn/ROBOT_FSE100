@@ -33,9 +33,6 @@ def control_ev3(ev3_ip, ev3_port):
         except AttributeError:
             pass
 
-
-
-
     try:
         # Start listening for keyboard events
         with keyboard.Listener(on_press=on_press, on_release=on_release) as listener:
