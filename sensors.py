@@ -3,18 +3,18 @@ from pybricks.parameters import Port, Color
  
 # change port for sensor as needed
 touchSensor = TouchSensor(Port.S1)  
-# colorSensor = ColorSensor(Port.?)
-# ultrasonicSensor = UltrasonicSensor(Port.?)
-# gyroSensor = GyroSensor(Port.?)
+# colorSensor = ColorSensor(Port.S?)
+# ultrasonicSensor = UltrasonicSensor(Port.S?)
+# gyroSensor = GyroSensor(Port.S?)
 
  
 def isTouched():
     return touchSensor.is_pressed()
 
-# def isRedTape();
+# def isRedTape():
     # return colorSensor.color() == Color.RED
 
-# def isBlueTape();
+# def isBlueTape():
     # return colorSensor.color() == Color.BLUE
 
 # def getDistance():
@@ -27,7 +27,7 @@ def isTouched():
     # return gyroSensor.angle()
 
 # def hasTurnedDegrees(target_angle):
-    # return abs(gyroSensorangle()) >= abs(taraget_angle)
+    # return abs(gyroSensor.angle()) >= abs(target_angle)
 
 # def resetHeading():
     # gyroSensor.reset_angle(0)
