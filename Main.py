@@ -15,7 +15,7 @@ left_motor = Motor(Port.C)
 right_motor = Motor(Port.D)
 # weapon = Motor(Port.A)
 robot = DriveBase(left_motor, right_motor, wheel_diameter=55.5, axle_track=104)
-
+touch_sensor = TouchSensor(Port.S1)
 
 
 # Server configuration
@@ -27,9 +27,9 @@ client_socket, address = server_socket.accept()
 print("Connected to {}".format(address))
 
 
+while not touch_sensor.pressed():
+        ev3.speaker.beep(frequency=440, duration=100)
 
-while not TouchSensor.pressed(Port.S1):
-        ev3.speaker.beep(frequency=440, duration=0)
 
 try:
     
