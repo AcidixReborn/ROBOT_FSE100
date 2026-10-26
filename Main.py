@@ -4,7 +4,7 @@ import socket
 
 from pybricks.hubs import EV3Brick
 from pybricks.ev3devices import Motor, TouchSensor, ColorSensor, UltrasonicSensor, GyroSensor
-from pybricks.parameters import Port, Color, SoundFile 
+from pybricks.parameters import Port, Color 
 from pybricks.robotics import DriveBase
 from pybricks.tools import wait
 
@@ -51,14 +51,14 @@ try:
         #     if not onTape:
         #         onTape = True
         #         robot.stop()
-        #         ev3.speaker.play_file(SoundFile.STOP)
+        #         v3.speaker.beep(frequency=440, duration=100)
         #         wait(5000)
         #         try:
         #             while client_socket.recv(2):
         #                 pass
         #         except OSError:
         #             pass
-        #         # ev3.speaker.play_file(SoundFile.GO)
+        #         # v3.speaker.beep(frequency=440, duration=100)
         # else:
         #     onTape = False
 
