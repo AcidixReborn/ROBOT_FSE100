@@ -1,10 +1,12 @@
 #!/usr/bin/env pybricks-micropython
 # main.py
 import socket
+
 from pybricks.hubs import EV3Brick
-from pybricks.ev3devices import Motor
+from pybricks.ev3devices import Motor, TouchSensor, ColorSensor, UltrasonicSensor, GyroSensor
 from pybricks.parameters import Port
 from pybricks.robotics import DriveBase
+from pybricks.tools import wait
 
 
 # Initialize EV3 components
@@ -13,6 +15,7 @@ left_motor = Motor(Port.C)
 right_motor = Motor(Port.D)
 # weapon = Motor(Port.A)
 robot = DriveBase(left_motor, right_motor, wheel_diameter=55.5, axle_track=104)
+
 
 
 # Server configuration
@@ -24,13 +27,18 @@ client_socket, address = server_socket.accept()
 print("Connected to {}".format(address))
 
 
+
+while not TouchSensor.pressed(Port.S1):
+        ev3.speaker.beep(frequency=440, duration=0)
+
 try:
+    
     while True:
-       
+
         command = client_socket.recv(2).decode()
         if not command:
             break
-
+        
 
         key, action = command[0], command[1]
         if action == "d":  # Key press
@@ -49,7 +57,7 @@ try:
                 robot.stop()  # Stop the robot on key release
             #elif key == "f":
             #    weapon.stop()  # Stop the weapon motor on key release
-
+            
 
 finally:
     client_socket.close()
