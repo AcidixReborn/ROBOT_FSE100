@@ -58,7 +58,7 @@ try:
         #                 pass
         #         except OSError:
         #             pass
-        #         # v3.speaker.beep(frequency=440, duration=100)
+        #         # ev3.speaker.beep(frequency=440, duration=100)
         # else:
         #     onTape = False
 
