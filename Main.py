@@ -30,7 +30,6 @@ print("Connected to {}".format(address))
 while not touch_sensor.pressed():
         ev3.speaker.beep(frequency=440, duration=100)
 
-
 try:
     
     while True:
