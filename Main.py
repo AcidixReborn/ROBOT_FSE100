@@ -4,7 +4,7 @@ import socket
 
 from pybricks.hubs import EV3Brick
 from pybricks.ev3devices import Motor, TouchSensor, ColorSensor, UltrasonicSensor, GyroSensor
-from pybricks.parameters import Port
+from pybricks.parameters import Port, Color, SoundFile 
 from pybricks.robotics import DriveBase
 from pybricks.tools import wait
 
@@ -15,7 +15,14 @@ left_motor = Motor(Port.C)
 right_motor = Motor(Port.D)
 # weapon = Motor(Port.A)
 robot = DriveBase(left_motor, right_motor, wheel_diameter=55.5, axle_track=104)
-touch_sensor = TouchSensor(Port.S1)
+
+# Touch Sensor Initialization
+touchSensor = TouchSensor(Port.S1)
+
+# Color Sensor Initialization...NEEDS TESTED BEFORE IMPLEMENTING
+# colorSensor = ColorSensor(Port.S2)
+# stopColors = [Color.RED, Color.GREEN, Color.BLUE, Color.YELLOW]
+# onTape = False
 
 
 # Server configuration
@@ -26,19 +33,45 @@ print("Waiting for connection...")
 client_socket, address = server_socket.accept()
 print("Connected to {}".format(address))
 
-
-while not touch_sensor.pressed():
-        ev3.speaker.beep(frequency=440, duration=100)
+#  added setBlocking so that the Color Sensor and UltraSonic Searches all the time.
+client_socket.setblocking(False)
 
 try:
     
     while True:
 
-        command = client_socket.recv(2).decode()
+        # Touch Sensor Enabled
+        if touchSensor.pressed():
+            robot.stop()
+            ev3.speaker.beep(frequency=440, duration=100)
+            break
+        
+        # Color Sensor Enabled...NEEDS TESTED BEFORE IMPLEMENTING
+        # if colorSensor.color() in stopColors:
+        #     if not onTape:
+        #         onTape = True
+        #         robot.stop()
+        #         ev3.speaker.play_file(SoundFile.STOP)
+        #         wait(5000)
+        #         try:
+        #             while client_socket.recv(2):
+        #                 pass
+        #         except OSError:
+        #             pass
+        #         # ev3.speaker.play_file(SoundFile.GO)
+        # else:
+        #     onTape = False
+
+        try: 
+            command = client_socket.recv(2).decode()
+        # added except so that the program doesnt break if no input is recieved (key movements)
+        except OSError:
+            wait(10)
+            continue
         if not command:
             break
         
-
+        # Keyboard Commands for Movement
         key, action = command[0], command[1]
         if action == "d":  # Key press
             if key == "w":
