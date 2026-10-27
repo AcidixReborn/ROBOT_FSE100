@@ -24,6 +24,10 @@ touchSensor = TouchSensor(Port.S1)
 # stopColors = [Color.RED, Color.GREEN, Color.BLUE, Color.YELLOW]
 # onTape = False
 
+# Gyro Sensor Initialization
+# gyroSensor = GyroSensor(Port.S3)
+# gyroSensor.reset_angle(0)
+# lastAngle = None
 
 # Server configuration
 server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -51,7 +55,7 @@ try:
         #     if not onTape:
         #         onTape = True
         #         robot.stop()
-        #         v3.speaker.beep(frequency=440, duration=100)
+        #         ev3.speaker.beep(frequency=440, duration=100)
         #         wait(5000)
         #         try:
         #             while client_socket.recv(2):
@@ -61,6 +65,13 @@ try:
         #         # ev3.speaker.beep(frequency=440, duration=100)
         # else:
         #     onTape = False
+
+        # Gyro Sensor Enabled...NEEDS TESTED BEFORE IMPLEMENTING
+        # currentAngle = gyroSensor.angle()
+        # if currentAngle != lastAngle:
+        #     ev3.screen.clear()
+        #     ev3.screen.print(currentAngle)
+        #     lastAngle = currentAngle
 
         try: 
             command = client_socket.recv(2).decode()
