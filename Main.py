@@ -29,6 +29,10 @@ touchSensor = TouchSensor(Port.S1)
 # gyroSensor.reset_angle(0)
 # lastAngle = None
 
+# Ultrasonic Sensor Initialization...NEEDS TESTED BEFORE IMPLEMENTING
+# ultrasonicSensor = UltrasonicSensor(Port.S4)
+# lastDistance = None
+
 # Server configuration
 server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server_socket.bind(("0.0.0.0", 12345))
@@ -51,10 +55,13 @@ try:
             break
         
         # Color Sensor Enabled...NEEDS TESTED BEFORE IMPLEMENTING
-        # if colorSensor.color() in stopColors:
+        # currentColor = colorSensor.color()
+        # if currentColor in stopColors:
         #     if not onTape:
         #         onTape = True
         #         robot.stop()
+        #         ev3.screen.clear()
+        #         ev3.screen.print(currentColor)
         #         ev3.speaker.beep(frequency=440, duration=100)
         #         wait(5000)
         #         try:
@@ -72,6 +79,13 @@ try:
         #     ev3.screen.clear()
         #     ev3.screen.print(currentAngle)
         #     lastAngle = currentAngle
+
+        # Ultrasonic Sensor Enabled...NEEDS TESTED BEFORE IMPLEMENTING
+        # currentDistance = ultrasonicSensor.distance()
+        # if currentDistance != lastDistance:
+        #     ev3.screen.clear()
+        #     ev3.screen.print(currentDistance)
+        #     lastDistance = currentDistance
 
         try: 
             command = client_socket.recv(2).decode()
