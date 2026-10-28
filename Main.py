@@ -20,12 +20,12 @@ robot = DriveBase(left_motor, right_motor, wheel_diameter=55.5, axle_track=104)
 touchSensor = TouchSensor(Port.S1)
 
 # Color Sensor Initialization...NEEDS TESTED BEFORE IMPLEMENTING
-# colorSensor = ColorSensor(Port.S2)
-# stopColors = [Color.RED, Color.GREEN, Color.BLUE, Color.YELLOW]
-# onTape = False
+colorSensor = ColorSensor(Port.S2)
+stopColors = [Color.RED, Color.GREEN, Color.BLUE, Color.YELLOW]
+onTape = False
 
 # Gyro Sensor Initialization
-# gyroSensor = GyroSensor(Port.S3)
+# gyroSensor = GyroSensor(Port.S1)
 # gyroSensor.reset_angle(0)
 # lastAngle = None
 
@@ -52,26 +52,25 @@ try:
         if touchSensor.pressed():
             robot.stop()
             ev3.speaker.beep(frequency=440, duration=100)
-            break
         
         # Color Sensor Enabled...NEEDS TESTED BEFORE IMPLEMENTING
-        # currentColor = colorSensor.color()
-        # if currentColor in stopColors:
-        #     if not onTape:
-        #         onTape = True
-        #         robot.stop()
-        #         ev3.screen.clear()
-        #         ev3.screen.print(currentColor)
-        #         ev3.speaker.beep(frequency=440, duration=100)
-        #         wait(5000)
-        #         try:
-        #             while client_socket.recv(2):
-        #                 pass
-        #         except OSError:
-        #             pass
-        #         # ev3.speaker.beep(frequency=440, duration=100)
-        # else:
-        #     onTape = False
+        currentColor = colorSensor.color()
+        if currentColor in stopColors:
+            if not onTape:
+                onTape = True
+                robot.stop()
+                ev3.screen.clear()
+                ev3.screen.print(currentColor)
+                ev3.speaker.beep(frequency=440, duration=100)
+                # wait(5000)
+                try:
+                    while client_socket.recv(2):
+                        pass
+                except OSError:
+                    pass
+                # ev3.speaker.beep(frequency=440, duration=100)
+        else:
+            onTape = False
 
         # Gyro Sensor Enabled...NEEDS TESTED BEFORE IMPLEMENTING
         # currentAngle = gyroSensor.angle()
