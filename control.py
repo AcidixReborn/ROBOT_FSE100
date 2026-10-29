@@ -12,8 +12,20 @@ def control_ev3(ev3_ip, ev3_port):
     # Connect to the EV3 server
     client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     client_socket.connect((ev3_ip, ev3_port))
+
+    # Space Bar Addtion
+    spaceHeld = False
    
     def on_press(key):
+        
+        nonlocal spaceHeld
+
+        if key == keyboard.Key.space:
+            if not spaceHeld:
+                spaceHeld = True
+                client_socket.send(b" d")
+            return
+
         try:
             if key.char in ("w", "a", "s", "d", "f"):
                 command = f"{key.char}d".encode()  # 'd' for key down
@@ -22,6 +34,14 @@ def control_ev3(ev3_ip, ev3_port):
             pass  # Ignore special keys
    
     def on_release(key):
+
+        nonlocal spaceHeld
+        if key == keyboard.Key.space:
+            if spaceHeld:
+                spaceHeld = False
+                client_socket.send(b" u")
+            return
+        
         try:
             if key.char in ("w", "a", "s", "d", "f"):
                 command = f"{key.char}u".encode()  # 'u' for key up
