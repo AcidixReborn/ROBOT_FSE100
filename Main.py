@@ -20,14 +20,14 @@ robot = DriveBase(left_motor, right_motor, wheel_diameter=55.5, axle_track=104)
 touchSensor = TouchSensor(Port.S1)
 
 # Color Sensor Initialization
-# colorSensor = ColorSensor(Port.S2)
-# stopColors = [Color.RED, Color.GREEN, Color.BLUE, Color.YELLOW]
-# onTape = False
+colorSensor = ColorSensor(Port.S2)
+stopColors = [Color.RED, Color.GREEN, Color.BLUE, Color.YELLOW]
+onTape = False
 
 # Gyro Sensor Initialization
-# gyroSensor = GyroSensor(Port.S1)
-# gyroSensor.reset_angle(0)
-# lastAngle = None
+gyroSensor = GyroSensor(Port.S3)
+gyroSensor.reset_angle(0)
+lastAngle = None
 
 # Ultrasonic Sensor Initialization
 ultrasonicSensor = UltrasonicSensor(Port.S4)
@@ -78,7 +78,7 @@ try:
         #     onTape = False
 
         # Gyro Sensor Enabled
-        # currentAngle = gyroSensor.angle()
+        currentAngle = gyroSensor.angle()
         # if currentAngle != lastAngle:
         #     ev3.screen.clear()
         #     ev3.screen.print(currentAngle)
