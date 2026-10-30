@@ -11,23 +11,23 @@ from pybricks.tools import wait
 
 # Initialize EV3 components
 ev3 = EV3Brick()
-left_motor = Motor(Port.C)
+left_motor = Motor(Port.A)
 right_motor = Motor(Port.D)
 # weapon = Motor(Port.A)
 robot = DriveBase(left_motor, right_motor, wheel_diameter=55.5, axle_track=104)
 
 # Touch Sensor Initialization
-touchSensor = TouchSensor(Port.S1)
+touchSensor = TouchSensor(Port.S2)
 
 # Color Sensor Initialization
-colorSensor = ColorSensor(Port.S2)
-stopColors = [Color.RED, Color.GREEN, Color.BLUE, Color.YELLOW]
+colorSensor = ColorSensor(Port.S3)
+stopColors = [Color.RED, Color.BLUE, Color.GREEN, Color.YELLOW]
 onTape = False
 
 # Gyro Sensor Initialization
-gyroSensor = GyroSensor(Port.S3)
+gyroSensor = GyroSensor(Port.S1)
 gyroSensor.reset_angle(0)
-lastAngle = None
+lastAngle = None    
 
 # Ultrasonic Sensor Initialization
 ultrasonicSensor = UltrasonicSensor(Port.S4)
@@ -48,6 +48,32 @@ print("Connected to {}".format(address))
 #  added setBlocking so that the Color Sensor and UltraSonic Searches all the time.
 client_socket.setblocking(False)
 
+def playTune(num):
+    if num == 0:
+        ev3.speaker.beep(frequency=440, duration=340)
+        ev3.speaker.beep(frequency=329, duration=170)
+        ev3.speaker.beep(frequency=349, duration=170)
+        ev3.speaker.beep(frequency=392, duration=170)
+        ev3.speaker.beep(frequency=440, duration=85) 
+        ev3.speaker.beep(frequency=392, duration=85)
+        ev3.speaker.beep(frequency=349, duration=170)
+        ev3.speaker.beep(frequency=329, duration=170)
+        ev3.speaker.beep(frequency=293, duration=255)
+        wait(85)
+        ev3.speaker.beep(frequency=293, duration=170)
+        ev3.speaker.beep(frequency=349, duration=170)
+        ev3.speaker.beep(frequency=440, duration=340)
+        ev3.speaker.beep(frequency=392, duration=170)
+        ev3.speaker.beep(frequency=349, duration=170)
+        ev3.speaker.beep(frequency=329, duration=510)
+        ev3.speaker.beep(frequency=349, duration=170)
+        ev3.speaker.beep(frequency=392, duration=340)
+        ev3.speaker.beep(frequency=440, duration=340)
+        ev3.speaker.beep(frequency=349, duration=340)
+        ev3.speaker.beep(frequency=293, duration=85)
+        wait(255)
+        ev3.speaker.beep(frequency=293, duration=340)
+
 try:
     
     while True:
@@ -59,23 +85,23 @@ try:
             ev3.speaker.beep(frequency=440, duration=100)
         
         # Color Sensor Enabled
-        # currentColor = colorSensor.color()
-        # if currentColor in stopColors:
-        #     if not onTape:
-        #         onTape = True
-        #         robot.stop()
-        #         ev3.screen.clear()
-        #         ev3.screen.print(currentColor)
-        #         ev3.speaker.beep(frequency=440, duration=100)
-        #         # wait(5000)
-        #         try:
-        #             while client_socket.recv(2):
-        #                 pass
-        #         except OSError:
-        #             pass
-        #         # ev3.speaker.beep(frequency=440, duration=100)
-        # else:
-        #     onTape = False
+        currentColor = colorSensor.color()
+        if currentColor in stopColors:
+            if not onTape:
+                onTape = True
+                robot.stop()
+                ev3.screen.clear()
+                ev3.screen.print(currentColor)
+                ev3.speaker.beep(frequency=440, duration=100)
+                # wait(5000)
+                try:
+                    while client_socket.recv(2):
+                        pass
+                except OSError:
+                    pass
+                # ev3.speaker.beep(frequency=440, duration=100)
+        else:
+            onTape = False
 
         # Gyro Sensor Enabled
         currentAngle = gyroSensor.angle()
@@ -86,21 +112,24 @@ try:
 
         # Ultrasonic Sensor Enabled...TESTING REQUIRED
         currentDistance = ultrasonicSensor.distance()
-        if currentDistance != lastDistance:
-            ev3.screen.clear()
-            ev3.screen.print(currentDistance)
-            lastDistance = currentDistance
+        # if currentDistance != lastDistance:
+        #     ev3.screen.clear()
+        #     ev3.screen.print(currentDistance)
+        #     lastDistance = currentDistance
 
         if autoMode:
             distance = ultrasonicSensor.distance()
             distanceToGo = distance - targetDistance
             if abs(distanceToGo) <= 10:
                 robot.stop()
-                robot.turn(-90)
+                targetAngle = currentAngle - 90
+                while (abs(targetAngle - gyroSensor.angle()) > 3):
+                    robot.drive(0, 90)
                 robot.stop()
                 autoMode = False
-                ev3.speaker.beep(frequency=440, duration=100)
-            else: 
+                playTune(0)
+                # ev3.speaker.beep(frequency=440, duration=100)
+            else:  
                 speed = distanceToGo * 2
                 speed = max(-300, min(300, speed))
                 robot.drive(speed, 0)
@@ -144,7 +173,7 @@ try:
                 robot.stop()  # Stop the robot on key release
             #elif key == "f":
             #    weapon.stop()  # Stop the weapon motor on key release
-            
+
 
 finally:
     client_socket.close()
