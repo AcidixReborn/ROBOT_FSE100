@@ -21,8 +21,27 @@ touchSensor = TouchSensor(Port.S2)
 
 # Color Sensor Initialization
 colorSensor = ColorSensor(Port.S3)
-stopColors = [Color.RED, Color.BLUE, Color.GREEN, Color.YELLOW]
 onTape = False
+
+# Color RGB Reference Values...INITIAL SETUP REQUIRED 
+colorReferences = {
+    "RED": (0, 0, 0),
+    "GREEN": (0, 0, 0),
+    "BLUE": (0, 0, 0),
+    "YELLOW": (0, 0, 0),
+    "FLOOR": (0, 0, 0)
+}
+
+# Stop Colors: Pick which colors to stop on based on which ones end up being the pickup and dropoff locations...DISABLED UNTIL TESTING IS DONE
+stopColors = [
+    "RED",
+    "GREEN",
+    "BLUE",
+    "YELLOW"
+]
+
+# Max Diff of Color RGB
+maxDiff = 30
 
 # Gyro Sensor Initialization
 gyroSensor = GyroSensor(Port.S1)
@@ -84,8 +103,21 @@ try:
             robot.stop()
             ev3.speaker.beep(frequency=440, duration=100)
         
-        # Color Sensor Enabled
-        currentColor = colorSensor.color()
+        # Color Sensor Enabled...MORE TESTING REQUIRED
+
+        r, g, b = colorSensor.rgb()
+        currentColor = None
+        closestDiff = None
+        for name in colorReferences:
+            refR, refG, refB = colorReferences[name]
+            diff = abs(r - refR) + abs(g - refG) + abs(b - refB)
+            if closestDiff is None or diff < closestDiff:
+                closestDiff = diff
+                currentColor = name
+
+        if closestDiff > maxDiff:
+            currentColor = None
+
         if currentColor in stopColors:
             if not onTape:
                 onTape = True
@@ -93,7 +125,7 @@ try:
                 ev3.screen.clear()
                 ev3.screen.print(currentColor)
                 ev3.speaker.beep(frequency=440, duration=100)
-                # wait(5000)
+                wait(5000)
                 try:
                     while client_socket.recv(2):
                         pass
