@@ -33,7 +33,7 @@ lastAngle = None
 ultrasonicSensor = UltrasonicSensor(Port.S4)
 lastDistance = None
 
-# Autonomous Mode Initialization...TESTING REQUIRED
+# Autonomous Mode Initialization
 autoMode = False
 targetDistance = 340
 
@@ -110,7 +110,7 @@ try:
         #     ev3.screen.print(currentAngle)
         #     lastAngle = currentAngle
 
-        # Ultrasonic Sensor Enabled...TESTING REQUIRED
+        # Ultrasonic Sensor Enabled
         currentDistance = ultrasonicSensor.distance()
         # if currentDistance != lastDistance:
         #     ev3.screen.clear()
@@ -128,7 +128,6 @@ try:
                 robot.stop()
                 autoMode = False
                 playTune(0)
-                # ev3.speaker.beep(frequency=440, duration=100)
             else:  
                 speed = distanceToGo * 2
                 speed = max(-300, min(300, speed))
