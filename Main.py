@@ -7,6 +7,7 @@ from pybricks.ev3devices import Motor, TouchSensor, ColorSensor, UltrasonicSenso
 from pybricks.parameters import Port, Color 
 from pybricks.robotics import DriveBase
 from pybricks.tools import wait
+from sounds import playTune
 
 
 # Initialize EV3 components
@@ -66,32 +67,6 @@ print("Connected to {}".format(address))
 
 #  added setBlocking so that the Color Sensor and UltraSonic Searches all the time.
 client_socket.setblocking(False)
-
-def playTune(num):
-    if num == 0:
-        ev3.speaker.beep(frequency=440, duration=340)
-        ev3.speaker.beep(frequency=329, duration=170)
-        ev3.speaker.beep(frequency=349, duration=170)
-        ev3.speaker.beep(frequency=392, duration=170)
-        ev3.speaker.beep(frequency=440, duration=85) 
-        ev3.speaker.beep(frequency=392, duration=85)
-        ev3.speaker.beep(frequency=349, duration=170)
-        ev3.speaker.beep(frequency=329, duration=170)
-        ev3.speaker.beep(frequency=293, duration=255)
-        wait(85)
-        ev3.speaker.beep(frequency=293, duration=170)
-        ev3.speaker.beep(frequency=349, duration=170)
-        ev3.speaker.beep(frequency=440, duration=340)
-        ev3.speaker.beep(frequency=392, duration=170)
-        ev3.speaker.beep(frequency=349, duration=170)
-        ev3.speaker.beep(frequency=329, duration=510)
-        ev3.speaker.beep(frequency=349, duration=170)
-        ev3.speaker.beep(frequency=392, duration=340)
-        ev3.speaker.beep(frequency=440, duration=340)
-        ev3.speaker.beep(frequency=349, duration=340)
-        ev3.speaker.beep(frequency=293, duration=85)
-        wait(255)
-        ev3.speaker.beep(frequency=293, duration=340)
 
 try:
     
@@ -159,7 +134,7 @@ try:
                     robot.drive(0, 90)
                 robot.stop()
                 autoMode = False
-                playTune(0)
+                playTune(ev3, 0)
             else:  
                 speed = distanceToGo * 2
                 speed = max(-300, min(300, speed))
