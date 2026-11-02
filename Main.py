@@ -23,28 +23,9 @@ touchSensor = TouchSensor(Port.S2)
 
 # Color Sensor Initialization
 colorSensor = ColorSensor(Port.S3)
+stopColors = [Color.RED, Color.GREEN, Color.BLUE, Color.YELLOW]
 onTape = False
 
-# Color RGB Reference Values...INITIAL SETUP REQUIRED 
-colorReferences = {
-    "RED": (255, 0, 0),
-    "GREEN": (0, 0, 255),
-    "BLUE": (0, 128, 0),
-    "YELLOW": (255, 255, 0),
-    "FLOOR": (255, 255, 255)
-}
-
-# Stop Colors: Pick which colors to stop on based on which ones end up being the pickup and dropoff locations...DISABLED UNTIL TESTING IS DONE
-stopColors = [
-    "RED",
-    "GREEN",
-    "BLUE",
-    "YELLOW"
-    "FLOOR"
-]
-
-# Max Diff of Color RGB ... we can change this to be emore stringent if needed.
-maxDiff = 30
 
 
 # Gyro Sensor Initialization
@@ -94,33 +75,18 @@ try:
             ev3.speaker.beep(frequency=440, duration=100)
         
         # Color Sensor Enabled...Blue Seeing Green
-        redReading, greenReading, blueReading = colorSensor.rgb()
-        currentColor = None
-        closestColorDifference = None
-        for colorName in colorReferences:
-            savedRed, savedGreen, savedBlue = colorReferences[colorName]
-            colorDifference = abs(redReading - savedRed) + abs(greenReading - savedGreen) + abs(blueReading - savedBlue)
-            if closestColorDifference is None or colorDifference < closestColorDifference:
-                closestColorDifference = colorDifference
-                currentColor = colorName
- 
-        if closestColorDifference > maxDiff:
-            currentColor = None
- 
-        if currentColor in stopColors:
+        if colorSensor.color() in stopColors:
             if not onTape:
                 onTape = True
                 robot.stop()
-                ev3.screen.clear()
-                ev3.screen.print(currentColor)
-                ev3.speaker.beep(frequency=440, duration=100)
+                ev3.speaker.play_file(playTune.STOP)
                 wait(5000)
                 try:
                     while client_socket.recv(2):
                         pass
                 except OSError:
                     pass
-                # ev3.speaker.beep(frequency=440, duration=100)
+                # ev3.speaker.play_file(SoundFile.GO)
         else:
             onTape = False
 
