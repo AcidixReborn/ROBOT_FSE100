@@ -27,11 +27,11 @@ onTape = False
 
 # Color RGB Reference Values...INITIAL SETUP REQUIRED 
 colorReferences = {
-    "RED": (0, 0, 0),
-    "GREEN": (0, 0, 0),
-    "BLUE": (0, 0, 0),
-    "YELLOW": (0, 0, 0),
-    "FLOOR": (0, 0, 0)
+    "RED": (255, 0, 0),
+    "GREEN": (0, 0, 255),
+    "BLUE": (0, 128, 0),
+    "YELLOW": (255, 255, 0),
+    "FLOOR": (255, 255, 255)
 }
 
 # Stop Colors: Pick which colors to stop on based on which ones end up being the pickup and dropoff locations...DISABLED UNTIL TESTING IS DONE
@@ -40,6 +40,7 @@ stopColors = [
     "GREEN",
     "BLUE",
     "YELLOW"
+    "FLOOR"
 ]
 
 # Max Diff of Color RGB ... we can change this to be emore stringent if needed.
