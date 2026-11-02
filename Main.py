@@ -23,7 +23,7 @@ touchSensor = TouchSensor(Port.S2)
 
 # Color Sensor Initialization
 colorSensor = ColorSensor(Port.S3)
-stopColors = [Color.RED, Color.GREEN, Color.BLUE, Color.YELLOW]
+stopColors = [Color.RED, Color.GREEN, Color.BLUE, Color.YELLOW, Color.WHITE]
 onTape = False
 
 
