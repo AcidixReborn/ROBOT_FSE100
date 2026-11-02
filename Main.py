@@ -78,7 +78,7 @@ try:
             if not onTape:
                 onTape = True
                 robot.stop()
-                ev3.speaker.play_file(SoundFile.STOP)
+                ev3.speaker.play_file(playTune.STOP)
                 wait(5000)
                 try:
                     while client_socket.recv(2):
