@@ -7,6 +7,7 @@ from pybricks.ev3devices import Motor, TouchSensor, ColorSensor, UltrasonicSenso
 from pybricks.parameters import Port, Color 
 from pybricks.robotics import DriveBase
 from pybricks.tools import wait
+from sounds import playTune
 
 
 # Initialize EV3 components
@@ -22,6 +23,7 @@ touchSensor = TouchSensor(Port.S2)
 # Color Sensor Initialization
 colorSensor = ColorSensor(Port.S3)
 onTape = False
+lastRgb = None
 
 # Color RGB Reference Values...INITIAL SETUP REQUIRED 
 colorReferences = {
@@ -67,31 +69,6 @@ print("Connected to {}".format(address))
 #  added setBlocking so that the Color Sensor and UltraSonic Searches all the time.
 client_socket.setblocking(False)
 
-def playTune(num):
-    if num == 0:
-        ev3.speaker.beep(frequency=440, duration=340)
-        ev3.speaker.beep(frequency=329, duration=170)
-        ev3.speaker.beep(frequency=349, duration=170)
-        ev3.speaker.beep(frequency=392, duration=170)
-        ev3.speaker.beep(frequency=440, duration=85) 
-        ev3.speaker.beep(frequency=392, duration=85)
-        ev3.speaker.beep(frequency=349, duration=170)
-        ev3.speaker.beep(frequency=329, duration=170)
-        ev3.speaker.beep(frequency=293, duration=255)
-        wait(85)
-        ev3.speaker.beep(frequency=293, duration=170)
-        ev3.speaker.beep(frequency=349, duration=170)
-        ev3.speaker.beep(frequency=440, duration=340)
-        ev3.speaker.beep(frequency=392, duration=170)
-        ev3.speaker.beep(frequency=349, duration=170)
-        ev3.speaker.beep(frequency=329, duration=510)
-        ev3.speaker.beep(frequency=349, duration=170)
-        ev3.speaker.beep(frequency=392, duration=340)
-        ev3.speaker.beep(frequency=440, duration=340)
-        ev3.speaker.beep(frequency=349, duration=340)
-        ev3.speaker.beep(frequency=293, duration=85)
-        wait(255)
-        ev3.speaker.beep(frequency=293, duration=340)
 
 try:
     
@@ -106,6 +83,11 @@ try:
         # Color Sensor Enabled...MORE TESTING REQUIRED
 
         r, g, b = colorSensor.rgb()
+        if (r, g, b) != lastRgb:
+            ev3.screen.clear()
+            ev3.screen.print(r, g, b)
+            lastRgb = (r, g, b)
+ 
         currentColor = None
         closestDiff = None
         for name in colorReferences:
@@ -114,24 +96,22 @@ try:
             if closestDiff is None or diff < closestDiff:
                 closestDiff = diff
                 currentColor = name
-
+ 
         if closestDiff > maxDiff:
             currentColor = None
-
+ 
         if currentColor in stopColors:
             if not onTape:
                 onTape = True
                 robot.stop()
-                ev3.screen.clear()
-                ev3.screen.print(currentColor)
+                # ev3.screen.clear()              #off while getting RGB numbers
+                # ev3.screen.print(currentColor)  #off while getting RGB numbers
                 ev3.speaker.beep(frequency=440, duration=100)
-                wait(5000)
                 try:
                     while client_socket.recv(2):
                         pass
                 except OSError:
                     pass
-                # ev3.speaker.beep(frequency=440, duration=100)
         else:
             onTape = False
 
@@ -159,7 +139,7 @@ try:
                     robot.drive(0, 90)
                 robot.stop()
                 autoMode = False
-                playTune(0)
+                playTune(ev3, 0)
             else:  
                 speed = distanceToGo * 2
                 speed = max(-300, min(300, speed))
