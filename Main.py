@@ -23,7 +23,7 @@ touchSensor = TouchSensor(Port.S2)
 
 # Color Sensor Initialization
 colorSensor = ColorSensor(Port.S3)
-stopColors = [Color.RED, Color.GREEN, Color.BLUE, Color.YELLOW]
+stopColors = [Color.RED, Color.GREEN, Color.BLUE, Color.YELLOW, Color.WHITE]
 onTape = False
 
 
@@ -73,7 +73,7 @@ try:
             robot.stop()
             ev3.speaker.beep(frequency=440, duration=100)
         
-        # Color Sensor Enabled...NEEDS TESTED BEFORE IMPLEMENTING
+        # Color Sensor Enabled...Blue Seeing Green
         if colorSensor.color() in stopColors:
             if not onTape:
                 onTape = True
