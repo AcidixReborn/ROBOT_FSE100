@@ -27,19 +27,19 @@ lastRgb = None
 
 # Color RGB Reference Values...INITIAL SETUP REQUIRED 
 colorReferences = {
-    "RED": (0, 0, 0),
-    "GREEN": (0, 0, 0),
-    "BLUE": (0, 0, 0),
-    "YELLOW": (0, 0, 0),
-    "FLOOR": (0, 0, 0)
+    "RED": (71, 10, 9),
+    "GREEN": (5, 28, 15),
+    "BLUE": (6, 10, 14),
+    "YELLOW": (76, 40, 10),
+    "FLOOR": (63, 73, 99)
 }
 
 # Stop Colors: Pick which colors to stop on based on which ones end up being the pickup and dropoff locations...DISABLED UNTIL TESTING IS DONE
 stopColors = [
-    "RED",
-    "GREEN",
+    # "RED",
+    # "GREEN",
     "BLUE",
-    "YELLOW"
+    # "YELLOW"
 ]
 
 # Max Diff of Color RGB
@@ -104,8 +104,8 @@ try:
             if not onTape:
                 onTape = True
                 robot.stop()
-                # ev3.screen.clear()              #off while getting RGB numbers
-                # ev3.screen.print(currentColor)  #off while getting RGB numbers
+                ev3.screen.clear()              #off while getting RGB numbers
+                ev3.screen.print(currentColor)  #off while getting RGB numbers
                 ev3.speaker.beep(frequency=440, duration=100)
                 try:
                     while client_socket.recv(2):
