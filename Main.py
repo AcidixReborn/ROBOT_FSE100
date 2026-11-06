@@ -14,7 +14,7 @@ from sounds import playTune
 ev3 = EV3Brick()
 left_motor = Motor(Port.A)
 right_motor = Motor(Port.D)
-# weapon = Motor(Port.A)
+# weapon = Motor(Port.C)
 robot = DriveBase(left_motor, right_motor, wheel_diameter=55.5, axle_track=104)
 
 # Touch Sensor Initialization
@@ -86,13 +86,13 @@ try:
     
     while True:
 
-        # Ultrasonic Sensor Enabled
         currentDistance = ultrasonicSensor.distance()
         # if currentDistance != lastDistance:
         #     ev3.screen.clear()
         #     ev3.screen.print(currentDistance)
         #     lastDistance = currentDistance
         
+
         currentAngle = gyroSensor.angle()
         # if currentAngle != lastAngle:
         #     ev3.screen.clear()
@@ -118,42 +118,39 @@ try:
         #         pass
         
         # Color Sensor Enabled
-
         r, g, b = colorSensor.rgb()
-        if (r, g, b) != lastRgb:
-            ev3.screen.clear()
-            ev3.screen.print(r, g, b)
-            lastRgb = (r, g, b)
+        # if (r, g, b) != lastRgb:
+        #     ev3.screen.clear()
+        #     ev3.screen.print(r, g, b)
+        #     lastRgb = (r, g, b)
  
-        currentColor = None
-        closestDiff = None
-        for name in colorReferences:
-            refR, refG, refB = colorReferences[name]
-            diff = abs(r - refR) + abs(g - refG) + abs(b - refB)
-            if closestDiff is None or diff < closestDiff:
-                closestDiff = diff
-                currentColor = name
+        # currentColor = None
+        # closestDiff = None
+        # for name in colorReferences:
+        #     refR, refG, refB = colorReferences[name]
+        #     diff = abs(r - refR) + abs(g - refG) + abs(b - refB)
+        #     if closestDiff is None or diff < closestDiff:
+        #         closestDiff = diff
+        #         currentColor = name
  
-        if closestDiff > maxDiff:
-            currentColor = None
+        # if closestDiff > maxDiff:
+        #     currentColor = None
  
-        if currentColor in stopColors:
-            if not onTape:
-                onTape = True
-                autoMode = False
-                robot.stop()
-                ev3.screen.clear()              
-                ev3.screen.print(currentColor)  
-                ev3.speaker.beep(frequency=440, duration=100)
-                try:
-                    while client_socket.recv(2):
-                        pass
-                except OSError:
-                    pass
-        else:
-            onTape = False
-
-        # Gyro Sensor Enabled
+        # if currentColor in stopColors:
+        #     if not onTape:
+        #         onTape = True
+        #         autoMode = False
+        #         robot.stop()
+        #         ev3.screen.clear()              
+        #         ev3.screen.print(currentColor)  
+        #         ev3.speaker.beep(frequency=440, duration=100)
+        #         try:
+        #             while client_socket.recv(2):
+        #                 pass
+        #         except OSError:
+        #             pass
+        # else:
+        #     onTape = False
         
 
         if autoMode:
@@ -178,6 +175,39 @@ try:
                 except OSError:
                     pass
 
+            elif (r, g, b) != lastRgb:
+                ev3.screen.clear()
+                ev3.screen.print(r, g, b)
+                lastRgb = (r, g, b)
+ 
+                currentColor = None
+                closestDiff = None
+            for name in colorReferences:
+                refR, refG, refB = colorReferences[name]
+                diff = abs(r - refR) + abs(g - refG) + abs(b - refB)
+            if closestDiff is None or diff < closestDiff:
+                closestDiff = diff
+                currentColor = name
+    
+            if closestDiff > maxDiff:
+                currentColor = None
+ 
+            if currentColor in stopColors:
+                if not onTape:
+                    onTape = True
+                    autoMode = False
+                    robot.stop()
+                    ev3.screen.clear()              
+                    ev3.screen.print(currentColor)  
+                    ev3.speaker.beep(frequency=440, duration=100)
+                    try:
+                        while client_socket.recv(2):
+                            pass
+                    except OSError:
+                        pass
+                else:
+                    onTape = False
+            
             elif currentDistance > openDistance:
                 if robot.distance() < ignoreRightUntil:
                     robot.drive(200, 0)
@@ -186,7 +216,7 @@ try:
                         openingStart = robot.distance()
                     if robot.distance() - openingStart >= clearCornerDistance:
                         robot.stop()
-                        targetAngle = gyroSensor.angle() - 90
+                        targetAngle = gyroSensor.angle() + 90
                         while (abs(targetAngle - gyroSensor.angle()) > 3):
                             robot.drive(0, 90)
                         robot.stop()
@@ -201,7 +231,9 @@ try:
                 # if it moves away from the wall instead of hugging the 0.5 needs to change to -0.5
                 steeringCorrection = (currentDistance - rightWallDistance) * 0.5
                 steeringCorrection = max(-40, min(40, steeringCorrection))
-                robot.drive(200, steeringCorrection)
+                # should be steeringCorrection but having issues with it...may need to add gyroSensor angle to it to make it more accurate
+                # robot.drive(200, steeringCorrection)
+                robot.drive(200, 0) 
 
         try:
             command = client_socket.recv(2).decode()
