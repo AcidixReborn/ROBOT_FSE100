@@ -220,7 +220,7 @@ try:
                         robot.stop()
                         targetAngle = gyroSensor.angle() + 90
                         while (abs(targetAngle - gyroSensor.angle()) > 3):
-                            robot.drive(0, 90)
+                            robot.drive(0, -90)
                         robot.stop()
                         robot.reset()
                         openingStart = None
