@@ -25,7 +25,7 @@ colorSensor = ColorSensor(Port.S3)
 onTape = False
 lastRgb = None
 
-# Color RGB Reference Values...INITIAL SETUP REQUIRED 
+# Color RGB Reference Values
 colorReferences = {
     "RED": (71, 10, 9),
     "GREEN": (5, 28, 15),
@@ -34,10 +34,10 @@ colorReferences = {
     "FLOOR": (63, 73, 99)
 }
 
-# Stop Colors: Pick which colors to stop on based on which ones end up being the pickup and dropoff locations...DISABLED UNTIL TESTING IS DONE
+# Stop Colors: Pick which colors to stop on based on which ones end up being the pickup and dropoff locations
 stopColors = [
     # "RED",
-    # "GREEN",
+    "GREEN",
     "BLUE",
     # "YELLOW"
 ]
@@ -117,7 +117,7 @@ try:
         #     except OSError:
         #         pass
         
-        # Color Sensor Enabled...MORE TESTING REQUIRED
+        # Color Sensor Enabled
 
         r, g, b = colorSensor.rgb()
         if (r, g, b) != lastRgb:
@@ -160,7 +160,7 @@ try:
             if touchSensor.pressed():
                 robot.stop()
                 ev3.speaker.beep(frequency=440, duration=100)
-                # may need to adjust the back up to make sure its in the center of the block...but should get corrected with the steering correction below.
+                # may need to adjust the back up to make sure its in the center of the block
                 robot.drive(-200, 0)
                 wait(1000)
                 robot.stop()
