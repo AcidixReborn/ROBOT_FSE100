@@ -74,11 +74,36 @@ try:
     
     while True:
 
+        # Ultrasonic Sensor Enabled
+        currentDistance = ultrasonicSensor.distance()
+        # if currentDistance != lastDistance:
+        #     ev3.screen.clear()
+        #     ev3.screen.print(currentDistance)
+        #     lastDistance = currentDistance
+        
+        currentAngle = gyroSensor.angle()
+        # if currentAngle != lastAngle:
+        #     ev3.screen.clear()
+        #     ev3.screen.print(currentAngle)
+        #     lastAngle = currentAngle
+
         # Touch Sensor Enabled
         if touchSensor.pressed():
-            autoMode = False
             robot.stop()
             ev3.speaker.beep(frequency=440, duration=100)
+            robot.drive(-200, 0)
+            wait(1000)
+            robot.stop()
+            targetAngle = currentAngle - 90
+            while (abs(targetAngle - gyroSensor.angle()) > 3):
+                robot.drive(0, 90)
+            robot.stop()
+
+            try: 
+                while client_socket.recv(1024):
+                    pass
+            except OSError:
+                pass
         
         # Color Sensor Enabled...MORE TESTING REQUIRED
 
@@ -104,8 +129,8 @@ try:
             if not onTape:
                 onTape = True
                 robot.stop()
-                ev3.screen.clear()              #off while getting RGB numbers
-                ev3.screen.print(currentColor)  #off while getting RGB numbers
+                ev3.screen.clear()              
+                ev3.screen.print(currentColor)  
                 ev3.speaker.beep(frequency=440, duration=100)
                 try:
                     while client_socket.recv(2):
@@ -116,34 +141,23 @@ try:
             onTape = False
 
         # Gyro Sensor Enabled
-        currentAngle = gyroSensor.angle()
-        # if currentAngle != lastAngle:
-        #     ev3.screen.clear()
-        #     ev3.screen.print(currentAngle)
-        #     lastAngle = currentAngle
+        
 
-        # Ultrasonic Sensor Enabled
-        currentDistance = ultrasonicSensor.distance()
-        # if currentDistance != lastDistance:
-        #     ev3.screen.clear()
-        #     ev3.screen.print(currentDistance)
-        #     lastDistance = currentDistance
-
-        if autoMode:
-            distance = ultrasonicSensor.distance()
-            distanceToGo = distance - targetDistance
-            if abs(distanceToGo) <= 10:
-                robot.stop()
-                targetAngle = currentAngle - 90
-                while (abs(targetAngle - gyroSensor.angle()) > 3):
-                    robot.drive(0, 90)
-                robot.stop()
-                autoMode = False
-                playTune(ev3, 0)
-            else:  
-                speed = distanceToGo * 2
-                speed = max(-300, min(300, speed))
-                robot.drive(speed, 0)
+        # if autoMode:
+        #     distance = ultrasonicSensor.distance()
+        #     distanceToGo = distance - targetDistance
+        #     if abs(distanceToGo) <= 10:
+        #         robot.stop()
+        #         targetAngle = currentAngle - 90
+        #         while (abs(targetAngle - gyroSensor.angle()) > 3):
+        #             robot.drive(0, 90)
+        #         robot.stop()
+        #         autoMode = False
+                # playTune(ev3, 0)
+        #     else:  
+        #         speed = distanceToGo * 2
+        #         speed = max(-100, min(100, speed))
+        #         robot.drive(speed, 0)
 
         try: 
             command = client_socket.recv(2).decode()
