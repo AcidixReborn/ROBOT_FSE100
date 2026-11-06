@@ -182,31 +182,33 @@ try:
  
                 currentColor = None
                 closestDiff = None
-            for name in colorReferences:
-                refR, refG, refB = colorReferences[name]
-                diff = abs(r - refR) + abs(g - refG) + abs(b - refB)
-            if closestDiff is None or diff < closestDiff:
-                closestDiff = diff
-                currentColor = name
+            
+                for name in colorReferences:
+                    refR, refG, refB = colorReferences[name]
+                    diff = abs(r - refR) + abs(g - refG) + abs(b - refB)
+            
+                if closestDiff is None or diff < closestDiff:
+                    closestDiff = diff
+                    currentColor = name
     
-            if closestDiff > maxDiff:
-                currentColor = None
+                if closestDiff > maxDiff:
+                    currentColor = None
  
-            if currentColor in stopColors:
-                if not onTape:
-                    onTape = True
-                    autoMode = False
-                    robot.stop()
-                    ev3.screen.clear()              
-                    ev3.screen.print(currentColor)  
-                    ev3.speaker.beep(frequency=440, duration=100)
-                    try:
-                        while client_socket.recv(2):
+                if currentColor in stopColors:
+                    if not onTape:
+                        onTape = True
+                        autoMode = False
+                        robot.stop()
+                        ev3.screen.clear()              
+                        ev3.screen.print(currentColor)  
+                        ev3.speaker.beep(frequency=440, duration=100)
+                        try:
+                            while client_socket.recv(2):
+                                pass
+                        except OSError:
                             pass
-                    except OSError:
-                        pass
-                else:
-                    onTape = False
+                    else:
+                        onTape = False
             
             elif currentDistance > openDistance:
                 if robot.distance() < ignoreRightUntil:
