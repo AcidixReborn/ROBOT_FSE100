@@ -56,7 +56,19 @@ lastDistance = None
 
 # Autonomous Mode Initialization
 autoMode = False
-targetDistance = 340
+# right sensor reading above this means there is an opening
+openDistance = 500
+# distance the ultrasnoic sensor should read to keep the robot hugging the right wall
+rightWallDistance = 250
+# when the robot sees an openDistance it then drives this distance before making the right turn so that it doesnt turn and then clip a wall
+clearCornerDistance = 300
+# after turning from finding an openDistance, there will be an openDistance so this stops it from turning again until it has driven this distance
+newPathDistance = 350
+# wheel distance where the current right-side opening was first seen
+openingStart = None
+# ignores right right side openings until this distance is traveled
+ignoreRightUntil = 0
+
 
 # Server configuration
 server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -88,22 +100,22 @@ try:
         #     lastAngle = currentAngle
 
         # Touch Sensor Enabled
-        if touchSensor.pressed():
-            robot.stop()
-            ev3.speaker.beep(frequency=440, duration=100)
-            robot.drive(-200, 0)
-            wait(1000)
-            robot.stop()
-            targetAngle = currentAngle - 90
-            while (abs(targetAngle - gyroSensor.angle()) > 3):
-                robot.drive(0, 90)
-            robot.stop()
+        # if touchSensor.pressed():
+        #     robot.stop()
+        #     ev3.speaker.beep(frequency=440, duration=100)
+        #     robot.drive(-200, 0)
+        #     wait(1000)
+        #     robot.stop()
+        #     targetAngle = currentAngle - 90
+        #     while (abs(targetAngle - gyroSensor.angle()) > 3):
+        #         robot.drive(0, 90)
+        #     robot.stop()
 
-            try: 
-                while client_socket.recv(1024):
-                    pass
-            except OSError:
-                pass
+        #     try: 
+        #         while client_socket.recv(1024):
+        #             pass
+        #     except OSError:
+        #         pass
         
         # Color Sensor Enabled...MORE TESTING REQUIRED
 
@@ -128,6 +140,7 @@ try:
         if currentColor in stopColors:
             if not onTape:
                 onTape = True
+                autoMode = False
                 robot.stop()
                 ev3.screen.clear()              
                 ev3.screen.print(currentColor)  
@@ -143,36 +156,66 @@ try:
         # Gyro Sensor Enabled
         
 
-        # if autoMode:
-        #     distance = ultrasonicSensor.distance()
-        #     distanceToGo = distance - targetDistance
-        #     if abs(distanceToGo) <= 10:
-        #         robot.stop()
-        #         targetAngle = currentAngle - 90
-        #         while (abs(targetAngle - gyroSensor.angle()) > 3):
-        #             robot.drive(0, 90)
-        #         robot.stop()
-        #         autoMode = False
-                # playTune(ev3, 0)
-        #     else:  
-        #         speed = distanceToGo * 2
-        #         speed = max(-100, min(100, speed))
-        #         robot.drive(speed, 0)
+        if autoMode:
+            if touchSensor.pressed():
+                robot.stop()
+                ev3.speaker.beep(frequency=440, duration=100)
+                # may need to adjust the back up to make sure its in the center of the block...but should get corrected with the steering correction below.
+                robot.drive(-200, 0)
+                wait(1000)
+                robot.stop()
+                targetAngle = currentAngle + 90
+                while (abs(targetAngle - gyroSensor.angle()) > 3):
+                    robot.drive(0, -90)
+                robot.stop()
+                robot.reset()
+                openingStart = None
+                ignoreRightUntil = 0
 
-        try: 
+                try: 
+                    while client_socket.recv(1024):
+                        pass
+                except OSError:
+                    pass
+
+            elif currentDistance > openDistance:
+                if robot.distance() < ignoreRightUntil:
+                    robot.drive(200, 0)
+                else:
+                    if openingStart is None:
+                        openingStart = robot.distance()
+                    if robot.distance() - openingStart >= clearCornerDistance:
+                        robot.stop()
+                        targetAngle = gyroSensor.angle() - 90
+                        while (abs(targetAngle - gyroSensor.angle()) > 3):
+                            robot.drive(0, 90)
+                        robot.stop()
+                        robot.reset()
+                        openingStart = None
+                        ignoreRightUntil = newPathDistance
+                    else:
+                        robot.drive(200, 0)
+
+            else:
+                openingStart = None
+                # if it moves away from the wall instead of hugging the 0.5 needs to change to -0.5
+                steeringCorrection = (currentDistance - rightWallDistance) * 0.5
+                steeringCorrection = max(-40, min(40, steeringCorrection))
+                robot.drive(200, steeringCorrection)
+
+        try:
             command = client_socket.recv(2).decode()
-        # added except so that the program doesnt break if no input is recieved (key movements)
         except OSError:
             wait(10)
             continue
         if not command:
-            break
+            break   
         
         # Keyboard Commands for Movement
         key, action = command[0], command[1]
 
         
-        # AutoMode Stops WASD and Weapon Input...TESTING REQUIRED
+        # AutoMode Stops WASD and Weapon Input
         if key == " ":
             if action == "d":
                 autoMode = not autoMode
