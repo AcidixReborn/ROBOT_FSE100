@@ -48,7 +48,8 @@ maxDiff = 30
 # Gyro Sensor Initialization
 gyroSensor = GyroSensor(Port.S1)
 gyroSensor.reset_angle(0)
-lastAngle = None    
+lastAngle = None   
+targetHeading = 0 
 
 # Ultrasonic Sensor Initialization
 ultrasonicSensor = UltrasonicSensor(Port.S4)
@@ -154,6 +155,7 @@ try:
         
 
         if autoMode:
+            headingCorrection = (gyroSensor.angle() - targetHeading) * 2
             if touchSensor.pressed():
                 robot.stop()
                 ev3.speaker.beep(frequency=440, duration=100)
@@ -161,8 +163,8 @@ try:
                 robot.drive(-200, 0)
                 wait(1000)
                 robot.stop()
-                targetAngle = currentAngle + 90
-                while (abs(targetAngle - gyroSensor.angle()) > 3):
+                targetHeading = targetHeading + 90
+                while (abs(targetHeading - gyroSensor.angle()) > 3):
                     robot.drive(0, -90)
                 robot.stop()
                 robot.reset()
@@ -212,14 +214,14 @@ try:
             
             elif currentDistance > openDistance:
                 if robot.distance() < ignoreRightUntil:
-                    robot.drive(200, 0)
+                    robot.drive(200, headingCorrection)
                 else:
                     if openingStart is None:
                         openingStart = robot.distance()
                     if robot.distance() - openingStart >= clearCornerDistance:
                         robot.stop()
-                        targetAngle = gyroSensor.angle() + 90
-                        while (abs(targetAngle - gyroSensor.angle()) > 3):
+                        targetHeading = targetHeading + 90
+                        while (abs(targetHeading - gyroSensor.angle()) > 3):
                             robot.drive(0, -90)
                         robot.stop()
                         robot.reset()
@@ -230,12 +232,12 @@ try:
 
             else:
                 openingStart = None
-                # if it moves away from the wall instead of hugging the 0.5 needs to change to -0.5
-                steeringCorrection = (currentDistance - rightWallDistance) * 0.5
+                # if it moves away from the wall instead of hugging the 0.5 needs to change to -0.2
+                # having issues with this...so it is all over the place again needs to be disabled.
+                wallCorrection = (currentDistance - rightWallDistance) * 0.2
+                steeringCorrection = headingCorrection + wallCorrection
                 steeringCorrection = max(-40, min(40, steeringCorrection))
-                # should be steeringCorrection but having issues with it...may need to add gyroSensor angle to it to make it more accurate
-                # robot.drive(200, steeringCorrection)
-                robot.drive(200, 0) 
+                robot.drive(200, steeringCorrection)
 
         try:
             command = client_socket.recv(2).decode()
@@ -253,6 +255,7 @@ try:
         if key == " ":
             if action == "d":
                 autoMode = not autoMode
+                targetHeading = gyroSensor.angle()
                 robot.stop()
             continue
 
